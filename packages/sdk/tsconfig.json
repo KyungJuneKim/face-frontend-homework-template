@@ -3,9 +3,9 @@
   "compilerOptions": {
     "outDir": "lib",
     "sourceMap": true,
-    "rootDir": ".",
+    "rootDir": "src",
     "declaration": true,
-    "declarationMap": true
+    "declarationMap": true,
   },
   "include": ["src"],
   "exclude": ["node_modules"]
