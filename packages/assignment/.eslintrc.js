@@ -17,6 +17,7 @@ module.exports = {
       },
     ],
     'react/jsx-filename-extension': ['error', { extensions: ['.jsx', '.tsx'] }],
+    'react/jsx-fragments': ['error', 'element'],
     'react/react-in-jsx-scope': 'off',
     'react-hooks/exhaustive-deps': [
       'warn',
