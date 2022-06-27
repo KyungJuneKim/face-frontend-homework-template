@@ -1,26 +1,28 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { css, Global } from '@emotion/react';
+import { RecoilRoot } from 'recoil';
+import { BrowserRouter } from 'react-router-dom';
 import App from './App';
+import './assets/fonts/fonts.css';
 
 const root = createRoot(document.getElementById('root') as HTMLElement);
 root.render(
   <StrictMode>
-    <Global
-      styles={css({
-        body: {
-          margin: 0,
-          fontFamily:
-            "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif",
-          '-webkit-font-smoothing': 'antialiased',
-          '-moz-osx-font-smoothing': 'grayscale',
-        },
-        code: {
-          fontFamily:
-            "source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace",
-        },
-      })}
-    />
-    <App />
+    <RecoilRoot>
+      <BrowserRouter>
+        <Global
+          styles={css({
+            body: {
+              margin: 0,
+              fontFamily: 'Inter',
+              WebkitFontSmoothing: 'antialiased',
+              MozOsxFontSmoothing: 'grayscale',
+            },
+          })}
+        />
+        <App />
+      </BrowserRouter>
+    </RecoilRoot>
   </StrictMode>
 );
