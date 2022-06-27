@@ -1,9 +1,11 @@
 {
   "extends": "@tsconfig/node16/tsconfig.json",
-  "compileOptions": {
+  "compilerOptions": {
     "outDir": "lib",
     "sourceMap": true,
-    "rootDir": "."
+    "rootDir": ".",
+    "declaration": true,
+    "declarationMap": true
   },
   "include": ["src"],
   "exclude": ["node_modules"]
