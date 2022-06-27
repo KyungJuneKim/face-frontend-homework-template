@@ -4,6 +4,8 @@ import Container from '../Container';
 import signUpState from '../../store/signUpState';
 import { SignUpState } from '../../types/signUpState';
 import Email from './Email';
+import Header from '../Header';
+import Footer from '../Footer';
 
 const signUpComponents: Record<SignUpState, ReactNode> = {
   Email: <Email />,
@@ -15,5 +17,11 @@ const signUpComponents: Record<SignUpState, ReactNode> = {
 export default function Connection() {
   const signUp = useRecoilValue(signUpState);
 
-  return <Container>{signUpComponents[signUp]}</Container>;
+  return (
+    <Container>
+      <Header />
+      {signUpComponents[signUp]}
+      <Footer />
+    </Container>
+  );
 }
