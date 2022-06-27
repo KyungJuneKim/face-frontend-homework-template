@@ -1,9 +1,11 @@
-import { css } from '@emotion/react';
-import { FaceSDK } from '@face/sdk';
-import { useRecoilState, useSetRecoilState } from 'recoil';
+import { css, keyframes } from '@emotion/react';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
+import { Fragment, useState } from 'react';
 import emailState from '../../store/emailState';
 import createStyles from '../../utils/createStyles';
 import signUpState from '../../store/signUpState';
+import faceSdkState from '../../store/faceSdkState';
+import circularProgress from '../../assets/images/pictures/circular_progress.png';
 
 const useStyles = createStyles({
   title: css({
@@ -14,7 +16,6 @@ const useStyles = createStyles({
     margin: '16px 0 0 0',
   }),
   subTitle: css({
-    fontWeight: 400,
     fontSize: '14px',
     lineHeight: '22px',
     color: '#465365',
@@ -30,7 +31,6 @@ const useStyles = createStyles({
     borderStyle: 'solid',
     borderColor: '#D9E0E5',
     borderRadius: '4px',
-    fontWeight: 400,
     fontSize: '16px',
     lineHeight: '24px',
     letterSpacing: '0.001em',
@@ -48,6 +48,10 @@ const useStyles = createStyles({
     padding: '14px 24px',
     marginTop: '24px',
     alignSelf: 'stretch',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: '8px',
     fontWeight: 700,
     fontSize: '16px',
     lineHeight: '24px',
@@ -61,9 +65,17 @@ const useStyles = createStyles({
       color: '#737E91',
     },
   }),
+  loading: css({
+    animationName: keyframes({
+      from: {transform: 'rotate(0deg)' },
+      to: {transform: 'rotate(360deg)' },
+    }),
+    animationDuration: '1s',
+    animationIterationCount: 'infinite',
+    animationTimingFunction: 'linear',
+  }),
   description: css({
     margin: '16px 0 0 0',
-    fontWeight: 400,
     fontSize: '12px',
     lineHeight: '18px',
     letterSpacing: '0.01em',
@@ -76,15 +88,13 @@ const useStyles = createStyles({
 
 export default function Email() {
   const styles = useStyles();
-  // const sdk = useRecoilValue(faceSdkState);
-  // const sdk = useRef(
-  //   new FaceSDK('https://ropsten.infura.io/v3/2a4f59ea8b174fb7ae9ed6fae1137e59')
-  // );
+  const [loading, setLoading] = useState(false);
+  const sdk = useRecoilValue(faceSdkState);
   const [id, setId] = useRecoilState(emailState);
   const setSignUp = useSetRecoilState(signUpState);
 
   return (
-    <div>
+    <Fragment>
       <h1 css={styles.title}>Connect Face Wallet</h1>
       <h2 css={styles.subTitle}>Enter the world of Web3 with Face</h2>
       <textarea
@@ -96,11 +106,14 @@ export default function Email() {
       <button
         type="button"
         css={styles.signButton}
-        disabled={!id}
-        // onClick={async () => {
-        //   if (await sdk.checkEmail(id)) setSignUp('Verification');
-        // }}
+        disabled={!id || loading}
+        onClick={async () => {
+          setLoading(true);
+          if (await sdk.checkEmail(id)) setSignUp('Verification');
+          setLoading(false);
+        }}
       >
+        {loading && <img css={styles.loading} src={circularProgress} alt="" />}
         Sign up / Login
       </button>
       <p css={styles.description}>
@@ -119,6 +132,6 @@ export default function Email() {
         </a>
         &nbsp; in their entirety.
       </p>
-    </div>
+    </Fragment>
   );
 }
