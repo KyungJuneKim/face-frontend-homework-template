@@ -3,12 +3,9 @@ import { css } from '@emotion/react';
 import Container from './Container';
 import createStyles from '../utils/createStyles';
 
-const useStyles = createStyles({
-  button: css({
-    height: '36px',
-    margin: '4px',
-  }),
-});
+const useStyles = createStyles((theme) => ({
+  button: css([theme.styles.button, { margin: '4px' }]),
+}));
 
 export default function Home() {
   const styles = useStyles();
