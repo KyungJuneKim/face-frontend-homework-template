@@ -1,7 +1,8 @@
-import { useRecoilValue } from 'recoil';
-import { ReactNode } from 'react';
+import { useRecoilValue, useResetRecoilState } from 'recoil';
+import { ReactNode, useEffect } from 'react';
 import Container from '../Container';
 import signUpState from '../../store/signUpState';
+import emailState from '../../store/emailState';
 import { SignUpState } from '../../types/signUpState';
 import Email from './Email';
 import Header from '../Header';
@@ -16,12 +17,13 @@ const signUpComponents: Record<SignUpState, ReactNode> = {
 
 export default function Connection() {
   const signUp = useRecoilValue(signUpState);
+  const resetEmailState = useResetRecoilState(emailState);
+  const resetSignUpState = useResetRecoilState(signUpState);
 
-  return (
-    <Container>
-      <Header />
-      {signUpComponents[signUp]}
-      <Footer />
-    </Container>
-  );
+  useEffect(() => {
+    resetEmailState();
+    resetSignUpState();
+  }, [resetEmailState, resetSignUpState]);
+
+  return <Container>{signUpComponents[signUp]}</Container>;
 }
