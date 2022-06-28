@@ -5,12 +5,15 @@ import signUpState from '../../store/signUpState';
 import emailState from '../../store/emailState';
 import { SignUpState } from '../../types/signUpState';
 import Email from './Email';
+import Verification from './Verification';
+import Password from './Password';
+import Success from './Success';
 
 const signUpComponents: Record<SignUpState, ReactNode> = {
   Email: <Email />,
-  Password: undefined,
-  Success: undefined,
-  Verification: undefined,
+  Verification: <Verification />,
+  Password: <Password />,
+  Success: <Success />,
 };
 
 export default function Connection() {
