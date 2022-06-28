@@ -1,4 +1,4 @@
-import { Fragment, useRef, useState } from 'react';
+import { Fragment, useCallback, useEffect, useRef, useState } from 'react';
 import { css, useTheme } from '@emotion/react';
 import { Edit } from '@mui/icons-material';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
@@ -10,6 +10,7 @@ import TextField from '../TextField';
 import CircularProgress from '../CircularProgress';
 import Header from '../Header';
 import Footer from '../Footer';
+import useTimer from '../../hooks/useTimer';
 
 const useStyles = createStyles((theme) => ({
   title: css([theme.styles.title, { margin: '16px 0 0 0' }]),
@@ -33,6 +34,12 @@ const useStyles = createStyles((theme) => ({
       backgroundColor: '#F0F5FF',
     },
   }),
+  timer: css({
+    fontSize: '16px',
+    lineHeight: '26px',
+    letterSpacing: '0.001em',
+    color: '#195DEE',
+  }),
   invalidMessage: css({
     marginTop: '8px',
     fontSize: '14px',
@@ -48,6 +55,15 @@ const useStyles = createStyles((theme) => ({
     color: '#919DB6',
     textAlign: 'center',
   }),
+  link: css({
+    padding: 0,
+    border: 'none',
+    backgroundColor: 'transparent',
+    color: '#7FA5FF',
+    fontSize: '12px',
+    lineHeight: '18px',
+    letterSpacing: '0.01em',
+  }),
 }));
 
 export default function Verification() {
@@ -61,6 +77,20 @@ export default function Verification() {
   const [verificationCode, setVerificationCode] = useState('');
   const [loading, setLoading] = useState(false);
   const [invalid, setInvalid] = useState(false);
+  const [time, resetTimer] = useTimer();
+  const [timeOver, setTimeOver] = useState(false);
+
+  const reset = useCallback(async () => {
+    await sdk.current.sendVerificationEmail(id);
+    setTimeOver(false);
+    resetTimer(300, () => setTimeOver(true));
+  }, [id, resetTimer]);
+
+  useEffect(() => {
+    (async () => {
+      await reset();
+    })();
+  }, [reset]);
 
   return (
     <Fragment>
@@ -75,36 +105,47 @@ export default function Verification() {
         {id}
         <Edit sx={{ width: '16px', height: '16px' }} />
       </button>
-      <div css={css({ marginTop: '24px' })}>
-        <TextField
-          value={verificationCode}
-          onChange={async (event) => {
-            setVerificationCode(event.target.value);
-            setInvalid(false);
-            if (event.target.value.length === 6) {
-              setLoading(true);
-              if (
-                await sdk.current.verifyEmailVerificationCode(
-                  id,
-                  verificationCode
+      {!timeOver || loading ? (
+        <div css={css({ marginTop: '24px' })}>
+          <TextField
+            value={verificationCode}
+            onChange={async (event) => {
+              setVerificationCode(event.target.value);
+              setInvalid(false);
+              if (event.target.value.length === 6) {
+                setLoading(true);
+                if (
+                  await sdk.current.verifyEmailVerificationCode(
+                    id,
+                    verificationCode
+                  )
                 )
-              )
-                setSignUp('Password');
-              else setInvalid(true);
-              setLoading(false);
-            }
-          }}
-          placeholder="Enter verification code"
+                  setSignUp('Password');
+                else setInvalid(true);
+                setLoading(false);
+              }
+            }}
+            placeholder="Enter verification code"
+          >
+            {loading && <CircularProgress />}
+            {!loading && !!time && <span css={styles.timer}>{time}</span>}
+          </TextField>
+        </div>
+      ) : (
+        <button
+          type="button"
+          css={[theme.styles.button, css({ marginTop: '24px' })]}
+          onClick={reset}
         >
-          {loading && <CircularProgress />}
-        </TextField>
-      </div>
+          Resend verification code
+        </button>
+      )}
       {invalid && <span css={styles.invalidMessage}>Invalid code.</span>}
       <p css={styles.description}>
         Didn&apos;t get a code?&nbsp;
-        <a css={theme.styles.link} href="https://haechi.io/ko">
+        <button type="button" css={styles.link} onClick={reset}>
           Click to resend
-        </a>
+        </button>
         .
       </p>
       <Footer />
