@@ -13,7 +13,7 @@ export default function Header() {
       })}
     >
       <OpenSeaSymbol />
-      <Clear onClick={() => navigate('/')} />
+      <Clear htmlColor="#A1B2BE" onClick={() => navigate('/')} />
     </div>
   );
 }
