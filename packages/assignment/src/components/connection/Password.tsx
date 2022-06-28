@@ -1,7 +1,8 @@
-import { Fragment, useState } from 'react';
+import { Fragment, useRef, useState } from 'react';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { css, useTheme } from '@emotion/react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { FaceSDK } from '@face/sdk';
 import createStyles from '../../utils/createStyles';
 import TextField from '../TextField';
 import Header from '../Header';
@@ -33,6 +34,9 @@ export default function Password() {
   const theme = useTheme();
   const id = useRecoilValue(emailState);
   const setSignUp = useSetRecoilState(signUpState);
+  const sdk = useRef(
+    new FaceSDK('https://ropsten.infura.io/v3/2a4f59ea8b174fb7ae9ed6fae1137e59')
+  );
   const [password, setPassword] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [pair, setPair] = useState('');
@@ -95,7 +99,10 @@ export default function Password() {
           disabledNumber ||
           disabledPasswordMatch
         }
-        onClick={() => setSignUp('Success')}
+        onClick={async () => {
+          await sdk.current.signUp({ email: id, password });
+          setSignUp('Success');
+        }}
       >
         Sign up
       </button>
