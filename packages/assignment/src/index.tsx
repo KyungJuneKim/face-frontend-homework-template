@@ -15,6 +15,8 @@ root.render(
           styles={css({
             body: {
               margin: 0,
+            },
+            '*': {
               fontFamily: 'Inter',
               WebkitFontSmoothing: 'antialiased',
               MozOsxFontSmoothing: 'grayscale',
