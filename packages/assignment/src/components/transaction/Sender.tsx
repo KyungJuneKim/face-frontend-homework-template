@@ -13,6 +13,7 @@ import amountForTransmissionState from '../../store/amountForTransmissionState';
 import availableBalanceState from '../../store/availableBalanceState';
 import transactionFeeState from '../../store/transactionFeeState';
 import transactionResponseState from '../../store/transactionResponseState';
+import formatStringNumber from '../../utils/formatStringNumber';
 
 const useStyles = createStyles((theme) => ({
   title: css([theme.styles.title, { margin: '16px 0 0 0' }]),
@@ -98,13 +99,13 @@ export default function Sender() {
       <Header />
       <h1 css={styles.title}>Send</h1>
       <h2 css={styles.expense(insufficient)}>
-        {ethers.utils.formatEther(amount.add(fee))}
+        {formatStringNumber(ethers.utils.formatEther(amount.add(fee)))}
         <span css={styles.unit}>ETH</span>
       </h2>
       <div css={styles.available}>
         <span>Available</span>
         <span>
-          {ethers.utils.formatEther(balance)}
+          {formatStringNumber(ethers.utils.formatEther(balance))}
           <span css={css({ marginLeft: '6px' })}>ETH</span>
         </span>
       </div>
@@ -115,16 +116,17 @@ export default function Sender() {
         </span>
         <span css={css({ gridRow: 2, gridColumn: 1 })}>Amount</span>
         <span css={css({ gridRow: 2, gridColumn: 2, textAlign: 'right' })}>
-          {ethers.utils.formatEther(amount)} ETH
+          {formatStringNumber(ethers.utils.formatEther(amount))} ETH
         </span>
         <span css={{ gridRow: 3, gridColumn: 1 }}>Fee</span>
         <span css={css({ gridRow: 3, gridColumn: 2, textAlign: 'right' })}>
-          {ethers.utils.formatEther(fee)} ETH
+          {formatStringNumber(ethers.utils.formatEther(fee))} ETH
         </span>
       </div>
       {insufficient && (
         <span css={styles.insufficientFundsMessage}>
-          Insufficient funds {ethers.utils.formatEther(insufficientFunds)} ETH
+          Insufficient funds{' '}
+          {formatStringNumber(ethers.utils.formatEther(insufficientFunds))} ETH
         </span>
       )}
       <button
