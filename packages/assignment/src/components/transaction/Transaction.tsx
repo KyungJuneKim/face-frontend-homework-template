@@ -31,30 +31,40 @@ export default function Transaction() {
       const provider = new ethers.providers.Web3Provider(sdk.getProvider());
       const signer = provider.getSigner();
       const address = await signer.getAddress();
-      try {
-        const [available, txRequest] = await Promise.all([
-          provider.getBalance(address),
-          signer.populateTransaction({ to: address, value: amount }),
-        ]);
-        setBalance(available);
-        setFee(
-          (txRequest.maxFeePerGas as ethers.BigNumber).mul(
-            txRequest.gasLimit as ethers.BigNumber
-          )
-        );
 
-        handleSenderConfirmButtonClick.current = async () => {
-          const tx = await signer.sendTransaction(txRequest);
-          setTransactionHash(tx.hash);
-          setTransactionStep('Bill');
-          setIsBillLoading(true);
-          await tx.wait();
-          setIsBillLoading(false);
-        };
-      } catch (reason) {
-        // eslint-disable-next-line no-console
-        console.log(reason);
+      let insufficient = false;
+      try {
+        await signer.populateTransaction({
+          to: address,
+          value: amount,
+        });
+      } catch {
+        insufficient = true;
       }
+      const [available, txRequest] = await Promise.all([
+        provider.getBalance(address),
+        signer.populateTransaction({
+          to: address,
+          value: amount,
+          gasLimit: insufficient ? 0 : undefined,
+        }),
+      ]);
+
+      setBalance(available);
+      setFee(
+        (txRequest.maxFeePerGas as ethers.BigNumber).mul(
+          txRequest.gasLimit as ethers.BigNumber
+        )
+      );
+
+      handleSenderConfirmButtonClick.current = async () => {
+        const tx = await signer.sendTransaction(txRequest);
+        setTransactionHash(tx.hash);
+        setTransactionStep('Bill');
+        setIsBillLoading(true);
+        await tx.wait();
+        setIsBillLoading(false);
+      };
     })();
   }, [amount, setTransactionStep]);
 
