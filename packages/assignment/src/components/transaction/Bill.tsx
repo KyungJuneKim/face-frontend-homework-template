@@ -58,9 +58,16 @@ type BillProps = {
   receiver: string;
   amount: ethers.BigNumber;
   fee: ethers.BigNumber;
+  txHash: string;
 };
 
-export default function Bill({ loading, receiver, amount, fee }: BillProps) {
+export default function Bill({
+  loading,
+  receiver,
+  amount,
+  fee,
+  txHash,
+}: BillProps) {
   const styles = useStyles();
   const theme = useTheme();
 
@@ -147,7 +154,7 @@ export default function Bill({ loading, receiver, amount, fee }: BillProps) {
         type="button"
         css={styles.button}
         onClick={() => {
-          window.open('https://ropsten.etherscan.io');
+          window.open(`https://ropsten.etherscan.io/tx/${txHash}`);
         }}
       >
         View on block explorer <OpenInNew />
