@@ -83,7 +83,7 @@ export default function Home() {
       <button
         type="button"
         css={[theme.styles.button, styles.margin]}
-        disabled={loading}
+        disabled={!receiver || !amount || loading}
         onClick={async () => {
           setLoading(true);
           await createBill();
