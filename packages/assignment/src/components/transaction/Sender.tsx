@@ -1,18 +1,11 @@
-import { Fragment, useState } from 'react';
+import { Fragment, MouseEventHandler, useState } from 'react';
 import { css } from '@emotion/react';
-import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { ethers } from 'ethers';
-import { FaceSDK } from '@face/sdk';
 import createStyles from '../../utils/createStyles';
 import Header from '../Header';
 import Footer from '../Footer';
 import CircularProgress from '../CircularProgress';
-import receiverAddressState from '../../store/receiverAddressState';
 import ellipseMiddleText from '../../utils/ellipseMiddleText';
-import amountForTransmissionState from '../../store/amountForTransmissionState';
-import availableBalanceState from '../../store/availableBalanceState';
-import transactionFeeState from '../../store/transactionFeeState';
-import transactionResponseState from '../../store/transactionResponseState';
 import formatStringNumber from '../../utils/formatStringNumber';
 
 const useStyles = createStyles((theme) => ({
@@ -69,30 +62,25 @@ const useStyles = createStyles((theme) => ({
   button: css([theme.styles.button, { marginTop: '24px', gap: '8px' }]),
 }));
 
-export default function Sender() {
+type SenderProps = {
+  balance: ethers.BigNumber;
+  receiver: string;
+  amount: ethers.BigNumber;
+  fee: ethers.BigNumber;
+  onConfirmButtonClick?: MouseEventHandler<HTMLButtonElement>;
+};
+
+export default function Sender({
+  balance,
+  receiver,
+  amount,
+  fee,
+  onConfirmButtonClick,
+}: SenderProps) {
   const styles = useStyles();
   const [loading, setLoading] = useState(false);
-  const setTransactionResponse = useSetRecoilState(transactionResponseState);
-  const receiver = useRecoilValue(receiverAddressState);
-  const amount = useRecoilValue(amountForTransmissionState);
-  const balance = useRecoilValue(availableBalanceState);
-  const fee = useRecoilValue(transactionFeeState);
   const insufficientFunds = fee.add(amount).sub(balance);
   const insufficient = insufficientFunds.gt(ethers.utils.parseEther('0'));
-
-  const transmitTransaction = async () => {
-    const sdk = new FaceSDK(
-      'https://ropsten.infura.io/v3/2a4f59ea8b174fb7ae9ed6fae1137e59'
-    );
-    const provider = new ethers.providers.Web3Provider(sdk.getProvider());
-    const signer = provider.getSigner();
-    const address = await signer.getAddress();
-    const txRequest = await signer.populateTransaction({
-      to: address,
-      value: amount,
-    });
-    setTransactionResponse(await signer.sendTransaction(txRequest));
-  };
 
   return (
     <Fragment>
@@ -133,9 +121,9 @@ export default function Sender() {
         type="button"
         css={styles.button}
         disabled={loading || insufficient}
-        onClick={async () => {
+        onClick={async (event) => {
           setLoading(true);
-          await transmitTransaction();
+          await onConfirmButtonClick?.(event);
           setLoading(false);
         }}
       >
