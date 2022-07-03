@@ -9,7 +9,7 @@ import Header from '../Header';
 import Footer from '../Footer';
 import emailState from '../../store/emailState';
 import Chip from '../Chip';
-import signUpState from '../../store/signUpState';
+import connectionStepState from '../../store/connectionStepState';
 
 const useStyles = createStyles((theme) => ({
   title: css([theme.styles.title, { margin: '16px 0 0 0' }]),
@@ -33,7 +33,7 @@ export default function Password() {
   const styles = useStyles();
   const theme = useTheme();
   const id = useRecoilValue(emailState);
-  const setSignUp = useSetRecoilState(signUpState);
+  const setConnectionStep = useSetRecoilState(connectionStepState);
   const sdk = useRef(
     new FaceSDK('https://ropsten.infura.io/v3/2a4f59ea8b174fb7ae9ed6fae1137e59')
   );
@@ -101,7 +101,7 @@ export default function Password() {
         }
         onClick={async () => {
           await sdk.current.signUp({ email: id, password });
-          setSignUp('Success');
+          setConnectionStep('Success');
         }}
       >
         Sign up

@@ -4,7 +4,7 @@ import { Fragment, useRef, useState } from 'react';
 import { FaceSDK } from '@face/sdk';
 import emailState from '../../store/emailState';
 import createStyles from '../../utils/createStyles';
-import signUpState from '../../store/signUpState';
+import connectionStepState from '../../store/connectionStepState';
 import TextField from '../TextField';
 import CircularProgress from '../CircularProgress';
 import Header from '../Header';
@@ -30,7 +30,7 @@ export default function Email() {
     new FaceSDK('https://ropsten.infura.io/v3/2a4f59ea8b174fb7ae9ed6fae1137e59')
   );
   const [id, setId] = useRecoilState(emailState);
-  const setSignUp = useSetRecoilState(signUpState);
+  const setConnectionStep = useSetRecoilState(connectionStepState);
 
   return (
     <Fragment>
@@ -50,7 +50,7 @@ export default function Email() {
         disabled={!id || loading}
         onClick={async () => {
           setLoading(true);
-          if (await sdk.current.checkEmail(id)) setSignUp('Verification');
+          if (await sdk.current.checkEmail(id)) setConnectionStep('Verification');
           setLoading(false);
         }}
       >

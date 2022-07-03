@@ -5,7 +5,7 @@ import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { FaceSDK } from '@face/sdk';
 import createStyles from '../../utils/createStyles';
 import emailState from '../../store/emailState';
-import signUpState from '../../store/signUpState';
+import connectionStepState from '../../store/connectionStepState';
 import TextField from '../TextField';
 import CircularProgress from '../CircularProgress';
 import Header from '../Header';
@@ -69,7 +69,7 @@ const useStyles = createStyles((theme) => ({
 export default function Verification() {
   const styles = useStyles();
   const theme = useTheme();
-  const setSignUp = useSetRecoilState(signUpState);
+  const setConnectionStep = useSetRecoilState(connectionStepState);
   const sdk = useRef(
     new FaceSDK('https://ropsten.infura.io/v3/2a4f59ea8b174fb7ae9ed6fae1137e59')
   );
@@ -100,7 +100,7 @@ export default function Verification() {
       <button
         type="button"
         css={styles.email}
-        onClick={() => setSignUp('Email')}
+        onClick={() => setConnectionStep('Email')}
       >
         {id}
         <Edit sx={{ width: '16px', height: '16px' }} />
@@ -120,7 +120,7 @@ export default function Verification() {
                     verificationCode
                   )
                 )
-                  setSignUp('Password');
+                  setConnectionStep('Password');
                 else setInvalid(true);
                 setLoading(false);
               }
