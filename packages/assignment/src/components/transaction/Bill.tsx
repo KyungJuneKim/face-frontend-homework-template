@@ -1,7 +1,8 @@
-import { Fragment } from 'react';
+import { Fragment, useState } from 'react';
 import { css, useTheme } from '@emotion/react';
-import { CheckCircle, OpenInNew } from '@mui/icons-material';
+import { CheckCircle, HelpOutline, OpenInNew } from '@mui/icons-material';
 import { ethers } from 'ethers';
+import { Popper } from '@mui/material';
 import createStyles from '../../utils/createStyles';
 import ellipseMiddleText from '../../utils/ellipseMiddleText';
 import formatStringNumber from '../../utils/formatStringNumber';
@@ -51,6 +52,15 @@ const useStyles = createStyles((theme) => ({
       backgroundColor: '#F3F4F6',
     },
   }),
+  tooltip: css({
+    maxWidth: '290px',
+    boxSizing: 'border-box',
+    padding: '6px 12px',
+    backgroundColor: '#3A4044',
+    borderRadius: '4px',
+    color: '#FFFFFF',
+    wordBreak: 'break-word',
+  }),
 }));
 
 type BillProps = {
@@ -70,6 +80,9 @@ export default function Bill({
 }: BillProps) {
   const styles = useStyles();
   const theme = useTheme();
+
+  const [anchorElement, setAnchorElement] = useState<Element | null>(null);
+  const [tooltipText, setTooltipText] = useState('');
 
   return (
     <Fragment>
@@ -110,6 +123,14 @@ export default function Bill({
             styles.margin,
             css({ gridRow: 3, gridColumn: 2, textAlign: 'right' }),
           ]}
+          onMouseEnter={(event) => {
+            setAnchorElement(event.currentTarget);
+            setTooltipText(receiver);
+          }}
+          onMouseLeave={() => {
+            setAnchorElement(null);
+            setTooltipText('');
+          }}
         >
           {ellipseMiddleText(receiver, 12)}
         </span>
@@ -124,8 +145,32 @@ export default function Bill({
         >
           {formatStringNumber(ethers.utils.formatEther(amount))} ETH
         </span>
-        <span css={[styles.margin, css({ gridRow: 5, gridColumn: 1 })]}>
+        <span
+          css={[
+            styles.margin,
+            css({
+              gridRow: 5,
+              gridColumn: 1,
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+            }),
+          ]}
+        >
           Fee
+          <HelpOutline
+            htmlColor="#B9C5CE"
+            onMouseEnter={(event) => {
+              setAnchorElement(event.currentTarget);
+              setTooltipText(
+                'The Ethereum network charges a transaction fee which varies based on blockchain usage.'
+              );
+            }}
+            onMouseLeave={() => {
+              setAnchorElement(null);
+              setTooltipText('');
+            }}
+          />
         </span>
         <span
           css={[
@@ -160,6 +205,13 @@ export default function Bill({
         View on block explorer <OpenInNew />
       </button>
       <Footer />
+      <Popper
+        open={anchorElement !== null}
+        anchorEl={anchorElement}
+        placement="top"
+      >
+        <div css={styles.tooltip}>{tooltipText}</div>
+      </Popper>
     </Fragment>
   );
 }

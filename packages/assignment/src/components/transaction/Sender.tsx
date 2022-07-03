@@ -1,6 +1,8 @@
 import { Fragment, MouseEventHandler, useState } from 'react';
 import { css } from '@emotion/react';
+import { HelpOutline } from '@mui/icons-material';
 import { ethers } from 'ethers';
+import { Popper } from '@mui/material';
 import createStyles from '../../utils/createStyles';
 import Header from '../Header';
 import Footer from '../Footer';
@@ -60,6 +62,15 @@ const useStyles = createStyles((theme) => ({
     textAlign: 'center',
   }),
   button: css([theme.styles.button, { marginTop: '24px', gap: '8px' }]),
+  tooltip: css({
+    maxWidth: '290px',
+    boxSizing: 'border-box',
+    padding: '6px 12px',
+    backgroundColor: '#3A4044',
+    borderRadius: '4px',
+    color: '#FFFFFF',
+    wordBreak: 'break-word',
+  }),
 }));
 
 type SenderProps = {
@@ -82,6 +93,9 @@ export default function Sender({
   const insufficientFunds = fee.add(amount).sub(balance);
   const insufficient = insufficientFunds.gt(ethers.utils.parseEther('0'));
 
+  const [anchorElement, setAnchorElement] = useState<Element | null>(null);
+  const [tooltipText, setTooltipText] = useState('');
+
   return (
     <Fragment>
       <Header />
@@ -99,14 +113,47 @@ export default function Sender({
       </div>
       <div css={styles.table}>
         <span css={css({ gridRow: 1, gridColumn: 1 })}>To</span>
-        <span css={css({ gridRow: 1, gridColumn: 2, textAlign: 'right' })}>
+        <span
+          css={css({ gridRow: 1, gridColumn: 2, textAlign: 'right' })}
+          onMouseEnter={(event) => {
+            setAnchorElement(event.currentTarget);
+            setTooltipText(receiver);
+          }}
+          onMouseLeave={() => {
+            setAnchorElement(null);
+            setTooltipText('');
+          }}
+        >
           {ellipseMiddleText(receiver, 12)}
         </span>
         <span css={css({ gridRow: 2, gridColumn: 1 })}>Amount</span>
         <span css={css({ gridRow: 2, gridColumn: 2, textAlign: 'right' })}>
           {formatStringNumber(ethers.utils.formatEther(amount))} ETH
         </span>
-        <span css={{ gridRow: 3, gridColumn: 1 }}>Fee</span>
+        <span
+          css={{
+            gridRow: 3,
+            gridColumn: 1,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+          }}
+        >
+          Fee
+          <HelpOutline
+            htmlColor="#B9C5CE"
+            onMouseEnter={(event) => {
+              setAnchorElement(event.currentTarget);
+              setTooltipText(
+                'The Ethereum network charges a transaction fee which varies based on blockchain usage.'
+              );
+            }}
+            onMouseLeave={() => {
+              setAnchorElement(null);
+              setTooltipText('');
+            }}
+          />
+        </span>
         <span css={css({ gridRow: 3, gridColumn: 2, textAlign: 'right' })}>
           {formatStringNumber(ethers.utils.formatEther(fee))} ETH
         </span>
@@ -131,6 +178,13 @@ export default function Sender({
         Confirm
       </button>
       <Footer />
+      <Popper
+        open={anchorElement !== null}
+        anchorEl={anchorElement}
+        placement="top"
+      >
+        <div css={styles.tooltip}>{tooltipText}</div>
+      </Popper>
     </Fragment>
   );
 }
