@@ -50,7 +50,8 @@ export default function Email() {
         disabled={!id || loading}
         onClick={async () => {
           setLoading(true);
-          if (await sdk.current.checkEmail(id)) setConnectionStep('Verification');
+          if (await sdk.current.checkEmail(id))
+            setConnectionStep('Verification');
           setLoading(false);
         }}
       >
