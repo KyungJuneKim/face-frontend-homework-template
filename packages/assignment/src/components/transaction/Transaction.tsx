@@ -21,7 +21,7 @@ export default function Transaction() {
   const handleSenderConfirmButtonClick = useRef<
     MouseEventHandler<HTMLButtonElement> | undefined
   >(undefined);
-  const transactionHash = useRef<string | null>(null);
+  const [transactionHash, setTransactionHash] = useState('');
 
   useEffect(() => {
     (async () => {
@@ -45,7 +45,7 @@ export default function Transaction() {
 
         handleSenderConfirmButtonClick.current = async () => {
           const tx = await signer.sendTransaction(txRequest);
-          transactionHash.current = tx.hash;
+          setTransactionHash(tx.hash);
           setTransactionStep('Bill');
           setIsBillLoading(true);
           await tx.wait();
@@ -69,17 +69,15 @@ export default function Transaction() {
           onConfirmButtonClick={handleSenderConfirmButtonClick.current}
         />
       )}
-      {transactionStep === 'Bill' &&
-        fee !== null &&
-        transactionHash.current !== null && (
-          <Bill
-            loading={isBillLoading}
-            receiver={receiver}
-            amount={amount}
-            fee={fee}
-            txHash={transactionHash.current}
-          />
-        )}
+      {transactionStep === 'Bill' && fee !== null && !!transactionHash && (
+        <Bill
+          loading={isBillLoading}
+          receiver={receiver}
+          amount={amount}
+          fee={fee}
+          txHash={transactionHash}
+        />
+      )}
     </Container>
   );
 }
